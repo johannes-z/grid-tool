@@ -4,18 +4,29 @@
 
 <script>
 export default {
+  inject: ['GRID_W', 'GRID_H'],
   props: {
     x: Number,
     y: Number,
-    w: Number,
-    h: Number
+    w: {
+      type: Number,
+      default: this.GRID_W
+    },
+    h: {
+      type: Number,
+      default: this.GRID_H
+    },
+    offsetX: Number,
+    offsetY: Number
   },
   computed: {
     styleObj () {
+      var x = (this.x + this.offsetX) * this.GRID_W
+      var y = (this.y + this.offsetY) * this.GRID_H
       return {
-        transform: `translate(${this.x}px, ${this.y}px)`,
-        width: `${this.w}px`,
-        height: `${this.h}px`
+        transform: `translate(${x + 1 + 5}px, ${y + 1 + 5}px)`,
+        width: `${this.GRID_W - 10}px`,
+        height: `${this.GRID_H - 10}px`
       }
     }
   }
@@ -25,7 +36,8 @@ export default {
 <style>
 .grid-element {
   position: absolute;
-  background-color: red;
+  background-color: black;
   cursor: move;
+  border-radius: 50px;
 }
 </style>
