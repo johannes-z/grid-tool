@@ -13,8 +13,7 @@ export default {
   computed: {
     styleObj () {
       return {
-        left: `${this.x}px`,
-        top: `${this.y}px`,
+        transform: `translate(${this.x}px, ${this.y}px)`,
         width: `${this.w}px`,
         height: `${this.h}px`
       }
@@ -27,5 +26,6 @@ export default {
 .grid-element {
   position: absolute;
   background-color: red;
+  cursor: move;
 }
 </style>
