@@ -5,6 +5,7 @@
     <GridElement v-for="(item, index) in items" :key="index"
                   :x="item.x" :y="item.y"
                   :offsetX="offsetX" :offsetY="offsetY"
+                  :collisions="3"
                   @mousedown.native.prevent="onMouseDown($event, item)"
     ></GridElement>
     <div class="grid-element-preview" :style="previewStyleObj" v-show="dragging"></div>
