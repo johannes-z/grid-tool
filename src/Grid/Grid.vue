@@ -59,8 +59,8 @@ export default {
       }
     },
     previewStyleObj () {
-      var x = this.newX * GRID_W
-      var y = this.newY * GRID_H
+      var x = (this.newX) * GRID_W
+      var y = (this.newY) * GRID_H
       return {
         left: `${x}px`,
         top: `${y}px`
@@ -78,16 +78,19 @@ export default {
       return {x, y}
     },
     onMouseDown (event, item) {
+      if (this.dragging) return
       this.dragging = true
       this.selectedItem = item
-      this.newX = item.x
-      this.newY = item.y
+      this.newX = item.x + this.offsetX
+      this.newY = item.y + this.offsetY
     },
     onMouseUp (event) {
+      if (!this.dragging) return
       this.dragging = false
+      let { x, y } = this.getCoordinates(event)
       var item = this.selectedItem
-      item.x = this.newX
-      item.y = this.newY
+      item.x = x - this.offsetX
+      item.y = y - this.offsetY
     },
     onMouseMove: throttle(function (event) {
       if (!this.dragging) return
@@ -107,7 +110,7 @@ export default {
   height: 2000px;
   display: inline-block;
 
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
 }
