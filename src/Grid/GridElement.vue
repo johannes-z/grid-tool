@@ -1,6 +1,7 @@
 <template>
-  <div :style="styleObj" class="grid-element">
-    <div class="token"></div>
+  <div :style="styleObj"
+       class="grid-element">
+    <div class="token">{{ text }}</div>
 
     <span class="collision-marker" v-if="collisions > 1">{{ collisions }}</span>
   </div>
@@ -23,6 +24,9 @@ export default {
     },
     offsetX: Number,
     offsetY: Number
+  },
+  data () {
+    return { text: 'S#1' }
   },
   computed: {
     styleObj () {
@@ -49,15 +53,21 @@ export default {
 .grid-element {
   position: absolute;
   cursor: move;
+  z-index: 2;
 }
 .token {
   margin: 10px;
   width: calc(100% - 20px);
   height: calc(100% - 20px);
+  font-size: 14px;
+  line-height: 28px;
   position: relative;
   background-color: black;
   border-radius: 50px;
   display: inline-block;
+  text-align: center;
+  color: white;
+  font-family: Consolar, Courier New, Courier, monospace;
 }
 .collision-marker {
   position: absolute;

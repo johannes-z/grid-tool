@@ -2,12 +2,24 @@
 <div>
   <nav class="navbar" role="navigation" aria-label="dropdown navigation">
     <div class="navbar-item has-dropdown is-hoverable">
-  <div class="control">
-    <button class="button is-text" @click.prevent.stop="move(-1, 0)">move left</button>
-    <button class="button is-text" @click.prevent.stop="move(1, 0)">move right</button>
-    <button class="button is-text" @click.prevent.stop="move(0, -1)">move up</button>
-    <button class="button is-text" @click.prevent.stop="move(0, 1)">move down</button>
-  </div>
+      <div class="control">
+        <button class="button"
+                @click.prevent.stop="move(-1, 0)">
+          <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button class="button"
+                @click.prevent.stop="move(1, 0)">
+          <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <button class="button"
+                @click.prevent.stop="move(0, -1)">
+          <i class="fa fa-chevron-up" aria-hidden="true"></i>
+        </button>
+        <button class="button"
+                @click.prevent.stop="move(0, 1)">
+          <i class="fa fa-chevron-down" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
   </nav>
   <Grid :offsetX="offsetX" :offsetY="offsetY"></Grid>
@@ -36,7 +48,6 @@ export default {
 
 <style>
 body {
-  height: 100%;
   margin: 5px;
 }
 </style>

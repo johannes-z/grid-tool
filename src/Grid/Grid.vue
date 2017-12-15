@@ -1,14 +1,17 @@
 <template>
   <div id="grid" ref="grid" :style="styleObj"
         @mouseup.prevent="onMouseUp($event)"
-        @mousemove.prevent="onMouseMove($event)">
+        @mousemove.prevent="onMouseMove($event)"
+        @contextmenu.prevent="onContextMenu($event)">
     <GridElement v-for="(item, index) in items" :key="index"
                   :x="item.x" :y="item.y"
                   :offsetX="offsetX" :offsetY="offsetY"
                   :collisions="item.collisions"
                   @mousedown.native.prevent="onMouseDown($event, item)"
     ></GridElement>
-    <div class="grid-element-preview" :style="previewStyleObj" v-show="dragging"></div>
+    <div class="grid-element-preview"
+         :style="previewStyleObj"
+         v-show="dragging"></div>
   </div>
 </template>
 
@@ -88,6 +91,11 @@ export default {
 
       return {x, y}
     },
+    onContextMenu (event) {
+      let target = event.target
+      if (!target || target.id !== 'grid') return
+      this.elements.push(this.getCoordinates(event))
+    },
     onMouseDown (event, item) {
       if (this.dragging) return
       this.dragging = true
@@ -117,9 +125,9 @@ export default {
 <style>
 #grid {
   position: relative;
-  width: 2000px;
-  height: 2000px;
-  display: inline-block;
+  width: 2001px;
+  height: 2001px;
+  display: block;
 
   background-image:
     linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
@@ -131,5 +139,6 @@ export default {
   width: 50px;
   height: 50px;
   background-color: rgba(255, 0, 0, 0.3);
+  z-index: 1;
 }
 </style>
