@@ -5,13 +5,11 @@
     <GridElement v-for="(item, index) in items" :key="index"
                   :x="item.x" :y="item.y"
                   :offsetX="offsetX" :offsetY="offsetY"
-                  :collisions="3"
+                  :collisions="item.collisions"
                   @mousedown.native.prevent="onMouseDown($event, item)"
     ></GridElement>
     <div class="grid-element-preview" :style="previewStyleObj" v-show="dragging"></div>
   </div>
-
-
 </template>
 
 <script>
@@ -38,6 +36,7 @@ export default {
         { x: 2, y: 2 },
         { x: 0, y: 2 }
       ],
+      collisionMap: {},
       grid: {},
       selectedItem: {},
       dragging: false,
@@ -51,6 +50,17 @@ export default {
   },
   computed: {
     items () {
+      this.collisionMap = {}
+      var collisionMap = this.collisionMap
+      this.elements.forEach(e => {
+        let x = e.x + this.offsetX
+        let y = e.y + this.offsetY
+        x = x < 0 ? 0 : x
+        y = y < 0 ? 0 : y
+        var key = x + ';' + y
+        collisionMap[key] = (collisionMap[key] || 0) + 1
+        e.collisions = collisionMap[key]
+      })
       return this.elements
     },
     styleObj () {

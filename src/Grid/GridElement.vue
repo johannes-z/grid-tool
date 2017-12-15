@@ -2,7 +2,7 @@
   <div :style="styleObj" class="grid-element">
     <div class="token"></div>
 
-    <span style="position: absolute; left: 0; top: 0; line-height: 12px; font-size: 12px;" v-if="collisions">{{ collisions }}</span>
+    <span class="collision-marker" v-if="collisions > 1">{{ collisions }}</span>
   </div>
 </template>
 
@@ -58,5 +58,13 @@ export default {
   background-color: black;
   border-radius: 50px;
   display: inline-block;
+}
+.collision-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 12px;
+  font-size: 12px;
+  background-color: white;
 }
 </style>
