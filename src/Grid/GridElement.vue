@@ -3,7 +3,9 @@
        class="grid-element">
     <div class="token">{{ text }}</div>
 
-    <span class="collision-marker" v-if="collisions > 1">{{ collisions }}</span>
+    <span class="collision-marker" v-if="item.collisions > 1">
+      {{ item.collisions }}
+    </span>
   </div>
 </template>
 
@@ -11,17 +13,7 @@
 export default {
   inject: ['GRID_W', 'GRID_H'],
   props: {
-    collisions: Number,
-    x: Number,
-    y: Number,
-    w: {
-      type: Number,
-      default: this.GRID_W
-    },
-    h: {
-      type: Number,
-      default: this.GRID_H
-    },
+    item: Object,
     offsetX: Number,
     offsetY: Number
   },
@@ -30,8 +22,8 @@ export default {
   },
   computed: {
     styleObj () {
-      var x = (this.x + this.offsetX) * this.GRID_W
-      var y = (this.y + this.offsetY) * this.GRID_H
+      var x = (this.item.x + this.offsetX) * this.GRID_W
+      var y = (this.item.y + this.offsetY) * this.GRID_H
       if (x < 0) {
         x = 0
       }
@@ -63,7 +55,6 @@ export default {
   line-height: 28px;
   position: relative;
   background-color: black;
-  border-radius: 50px;
   display: inline-block;
   text-align: center;
   color: white;

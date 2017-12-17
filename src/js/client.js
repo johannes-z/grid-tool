@@ -22,4 +22,12 @@ export default class Client {
       console.log('close')
     })
   }
+
+  send (data) {
+    this.socket.send(data)
+  }
+
+  registerEventListener (type, fn) {
+    this.socket.addEventListener(type, fn)
+  }
 }

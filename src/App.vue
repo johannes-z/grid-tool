@@ -30,6 +30,7 @@
 import Grid from './Grid/Grid.vue'
 
 export default {
+  inject: ['bus'],
   components: { Grid },
   data () {
     return {
@@ -41,6 +42,10 @@ export default {
     move (x, y) {
       this.offsetX += x
       this.offsetY += y
+      this.bus.$emit('offsetChanged', {
+        offsetX: this.offsetX,
+        offsetY: this.offsetY
+      })
     }
   }
 }

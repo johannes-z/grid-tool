@@ -4,10 +4,9 @@
         @mousemove.prevent="onMouseMove($event)"
         @contextmenu.prevent="onContextMenu($event)">
     <GridElement v-for="(item, index) in items" :key="index"
-                  :x="item.x" :y="item.y"
-                  :offsetX="offsetX" :offsetY="offsetY"
-                  :collisions="item.collisions"
-                  @mousedown.native.prevent="onMouseDown($event, item)"
+                 :item="item"
+                 :offsetX="offsetX" :offsetY="offsetY"
+                 @mousedown.left.native.prevent="onMouseDown($event, item)"
     ></GridElement>
     <div class="grid-element-preview"
          :style="previewStyleObj"
@@ -23,6 +22,7 @@ const GRID_W = 50
 const GRID_H = GRID_W
 
 export default {
+  inject: ['bus'],
   provide: {
     GRID_W,
     GRID_H
@@ -62,7 +62,6 @@ export default {
         y = y < 0 ? 0 : y
         var key = x + ';' + y
         collisionMap[key] = (collisionMap[key] || 0) + 1
-        e.collisions = collisionMap[key]
       })
       return this.elements
     },
@@ -82,6 +81,13 @@ export default {
     }
   },
   methods: {
+    moveItem (item, x, y) {
+      let key = x + ';' + y
+      item.x = x - this.offsetX
+      item.y = y - this.offsetY
+      item.collisions = this.collisionMap[key]
+      this.bus.$emit('itemMoved', item)
+    },
     getCoordinates (event) {
       let cx = event.clientX - this.grid.offsetLeft
       let cy = event.clientY - this.grid.offsetTop
@@ -94,22 +100,27 @@ export default {
     onContextMenu (event) {
       let target = event.target
       if (!target || target.id !== 'grid') return
-      this.elements.push(this.getCoordinates(event))
+      let { x, y } = this.getCoordinates(event)
+      let item = {
+        x: x - this.offsetX,
+        y: y - this.offsetY
+      }
+      this.elements.push(item)
+      this.bus.$emit('itemCreated', item)
     },
     onMouseDown (event, item) {
       if (this.dragging) return
       this.dragging = true
+      let { x, y } = this.getCoordinates(event)
       this.selectedItem = item
-      this.newX = item.x + this.offsetX
-      this.newY = item.y + this.offsetY
+      this.newX = x
+      this.newY = y
     },
     onMouseUp (event) {
       if (!this.dragging) return
       this.dragging = false
       let { x, y } = this.getCoordinates(event)
-      var item = this.selectedItem
-      item.x = x - this.offsetX
-      item.y = y - this.offsetY
+      this.moveItem(this.selectedItem, x, y)
     },
     onMouseMove: throttle(function (event) {
       if (!this.dragging) return
