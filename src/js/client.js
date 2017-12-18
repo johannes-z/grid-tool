@@ -6,7 +6,7 @@ export default class Client {
   }
 
   init (ip, port) {
-    this.socket = new WebSocket(`ws://${ip}:${port}`)
+    this.socket = new WebSocket(`wss://${ip}:${port}`)
 
     var promise = new Promise((resolve, reject) => {
       // Connection opened
