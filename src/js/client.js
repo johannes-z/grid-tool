@@ -14,7 +14,7 @@ export default class Client {
 
     // Listen for messages
     this.socket.addEventListener('message', event => {
-      console.log('Message from server ', event.data)
+      console.log(event.data)
     })
 
     // Connection errored

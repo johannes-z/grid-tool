@@ -17,15 +17,20 @@ new Vue({
   created () {
     bus.$on('itemMoved', this.onItemMoved)
     bus.$on('itemCreated', this.onItemCreated)
+    bus.$on('offsetChanged', this.onOffsetChanged)
     client.init()
   },
   methods: {
-    onItemMoved (item) {
-      let data = { action: 'moved', item }
+    onItemMoved (payload) {
+      let data = { action: 'moved', payload }
       client.send(JSON.stringify(data))
     },
-    onItemCreated (item) {
-      let data = { action: 'created', item }
+    onItemCreated (payload) {
+      let data = { action: 'created', payload }
+      client.send(JSON.stringify(data))
+    },
+    onOffsetChanged (payload) {
+      let data = { action: 'offset', payload }
       client.send(JSON.stringify(data))
     }
   }

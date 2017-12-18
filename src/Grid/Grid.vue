@@ -8,15 +8,23 @@
                  :offsetX="offsetX" :offsetY="offsetY"
                  @mousedown.left.native.prevent="onMouseDown($event, item)"
     ></GridElement>
+    <CollisionIndicator v-for="(collisions, key) in collisionMap" :key="key"
+                        :coordinates="key"
+                        :collisions="collisions"
+                        :offsetX="offsetX"
+                        :offsetY="offsetY"
+    ></CollisionIndicator>
     <div class="grid-element-preview"
          :style="previewStyleObj"
          v-show="dragging"></div>
+    {{ collisions }}
   </div>
 </template>
 
 <script>
 import { throttle } from '../js/util'
 import GridElement from './GridElement.vue'
+import CollisionIndicator from './CollisionIndicator.vue'
 
 const GRID_W = 50
 const GRID_H = GRID_W
@@ -27,7 +35,7 @@ export default {
     GRID_W,
     GRID_H
   },
-  components: { GridElement },
+  components: { GridElement, CollisionIndicator },
   props: {
     offsetX: Number,
     offsetY: Number
@@ -52,7 +60,7 @@ export default {
     this.grid = grid
   },
   computed: {
-    items () {
+    collisions () {
       this.collisionMap = {}
       var collisionMap = this.collisionMap
       this.elements.forEach(e => {
@@ -63,6 +71,8 @@ export default {
         var key = x + ';' + y
         collisionMap[key] = (collisionMap[key] || 0) + 1
       })
+    },
+    items () {
       return this.elements
     },
     styleObj () {
@@ -82,10 +92,8 @@ export default {
   },
   methods: {
     moveItem (item, x, y) {
-      let key = x + ';' + y
       item.x = x - this.offsetX
       item.y = y - this.offsetY
-      item.collisions = this.collisionMap[key]
       this.bus.$emit('itemMoved', item)
     },
     getCoordinates (event) {
