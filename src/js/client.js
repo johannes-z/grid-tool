@@ -1,26 +1,36 @@
 export default class Client {
-  init () {
-    this.socket = new WebSocket('ws://localhost:8082')
+  constructor () {
+    this.socket = {
+      readyState: 0
+    }
+  }
 
-    // Connection opened
-    this.socket.addEventListener('open', event => {
-      this.socket.send('Hello Server!')
+  init (ip, port) {
+    this.socket = new WebSocket(`ws://${ip}:${port}`)
+
+    var promise = new Promise((resolve, reject) => {
+      // Connection opened
+      this.socket.addEventListener('open', event => {
+        resolve()
+      })
+
+      // Connection errored
+      this.socket.addEventListener('error', event => {
+        reject(event)
+      })
+
+      // Listen for messages
+      this.socket.addEventListener('message', event => {
+      })
+
+      // Connection errored
+      this.socket.addEventListener('close', event => {
+        console.log('close')
+        reject(event)
+      })
     })
 
-    // Connection errored
-    this.socket.addEventListener('error', event => {
-      console.log('error')
-    })
-
-    // Listen for messages
-    this.socket.addEventListener('message', event => {
-      console.log(event.data)
-    })
-
-    // Connection errored
-    this.socket.addEventListener('close', event => {
-      console.log('close')
-    })
+    return promise
   }
 
   send (data) {

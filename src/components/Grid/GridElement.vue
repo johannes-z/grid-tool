@@ -1,7 +1,7 @@
 <template>
   <div :style="styleObj"
        class="grid-element">
-    <div class="token">{{ text }}</div>
+    <div class="token">{{ text }}{{ item.id }}</div>
 
     <span class="collision-marker" v-if="item.collisions > 1">
       {{ item.collisions }}
@@ -18,7 +18,7 @@ export default {
     offsetY: Number
   },
   data () {
-    return { text: 'S#1' }
+    return { text: '' }
   },
   computed: {
     styleObj () {

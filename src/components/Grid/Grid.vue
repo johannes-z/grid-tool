@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { throttle } from '../js/util'
+import { throttle } from '../../js/util'
 import GridElement from './GridElement.vue'
 import CollisionIndicator from './CollisionIndicator.vue'
 
@@ -30,7 +30,7 @@ const GRID_W = 50
 const GRID_H = GRID_W
 
 export default {
-  inject: ['bus'],
+  inject: ['bus', 'client'],
   provide: {
     GRID_W,
     GRID_H
@@ -42,11 +42,7 @@ export default {
   },
   data () {
     return {
-      elements: [
-        { x: 2, y: 5 },
-        { x: 2, y: 2 },
-        { x: 0, y: 2 }
-      ],
+      elements: [],
       collisionMap: {},
       grid: {},
       selectedItem: {},
@@ -54,6 +50,12 @@ export default {
       newX: 0,
       newY: 0
     }
+  },
+  created () {
+    if (this.client.socket.readyState !== 1) return
+    this.client.registerEventListener('message', event => {
+      this.elements = JSON.parse(event.data)
+    })
   },
   mounted () {
     var grid = document.querySelector('#grid')
@@ -109,7 +111,10 @@ export default {
       let target = event.target
       if (!target || target.id !== 'grid') return
       let { x, y } = this.getCoordinates(event)
+      let items = this.items
+      var id = items.length > 0 ? Math.max(...items.map(i => i.id)) : 0
       let item = {
+        id: id + 1,
         x: x - this.offsetX,
         y: y - this.offsetY
       }

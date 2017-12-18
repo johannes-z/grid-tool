@@ -1,58 +1,34 @@
 <template>
-<div>
-  <nav class="navbar" role="navigation" aria-label="dropdown navigation">
-    <div class="navbar-item has-dropdown is-hoverable">
-      <div class="control">
-        <button class="button"
-                @click.prevent.stop="move(-1, 0)">
-          <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        </button>
-        <button class="button"
-                @click.prevent.stop="move(1, 0)">
-          <i class="fa fa-chevron-right" aria-hidden="true"></i>
-        </button>
-        <button class="button"
-                @click.prevent.stop="move(0, -1)">
-          <i class="fa fa-chevron-up" aria-hidden="true"></i>
-        </button>
-        <button class="button"
-                @click.prevent.stop="move(0, 1)">
-          <i class="fa fa-chevron-down" aria-hidden="true"></i>
-        </button>
-      </div>
-    </div>
-  </nav>
-  <Grid :offsetX="offsetX" :offsetY="offsetY"></Grid>
-</div>
+  <router-view></router-view>
 </template>
 
 <script>
-import Grid from './Grid/Grid.vue'
+import Client from './js/client'
+const client = new Client()
 
 export default {
   inject: ['bus'],
-  components: { Grid },
-  data () {
-    return {
-      offsetX: 0,
-      offsetY: 0
-    }
+  provide: {
+    client
+  },
+  created () {
+    this.bus.$on('itemMoved', this.onItemMoved)
+    this.bus.$on('itemCreated', this.onItemCreated)
+    this.bus.$on('offsetChanged', this.onOffsetChanged)
   },
   methods: {
-    move (x, y) {
-      this.offsetX += x
-      this.offsetY += y
-      this.bus.$emit('offsetChanged', {
-        offsetX: this.offsetX,
-        offsetY: this.offsetY
-      })
+    onItemMoved (payload) {
+      let data = { action: 'moved', payload }
+      client.send(JSON.stringify(data))
+    },
+    onItemCreated (payload) {
+      let data = { action: 'created', payload }
+      client.send(JSON.stringify(data))
+    },
+    onOffsetChanged (payload) {
+      let data = { action: 'offset', payload }
+      client.send(JSON.stringify(data))
     }
   }
 }
 </script>
-
-<style>
-body {
-  margin: 5px;
-}
-</style>

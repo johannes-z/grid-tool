@@ -28,10 +28,12 @@ export default {
   },
   computed: {
     position () {
-      var x = (this.x + this.offsetX) * this.GRID_W
-      var y = (this.y + this.offsetY) * this.GRID_H
+      var x = (this.x + this.offsetX)
+      var y = (this.y + this.offsetY)
+      x = x < 0 ? 0 : x
+      y = y < 0 ? 0 : y
       var style = {
-        transform: `translate(${x + 1}px, ${y + 1}px)`,
+        transform: `translate(${x * this.GRID_W + 1}px, ${y * this.GRID_H + 1}px)`,
         width: `${this.GRID_W - 1}px`,
         height: `${this.GRID_H - 1}px`
       }
