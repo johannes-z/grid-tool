@@ -12,13 +12,15 @@
               <form>
                 <div class="field">
                   <div class="control">
-                    <input class="input is-large" type="text" placeholder="i.e.: 10.0.0.1:8082" autofocus=""
+                    <input class="input is-large" type="text" 
+                      placeholder="i.e.: 10.0.0.1:8082" autofocus=""
                       v-model="address"
-                      required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$">
+                      required pattern="^(([0-9]{1,3}\.){3}[0-9]{1,3}|localhost):[0-9]{1,4}$"
+                      @enter>
                   </div>
                 </div>
-                <a class="button is-block is-info is-large"
-                   @click="onClick">Connect</a>
+                <input type="submit" class="button is-info is-large"
+                   @click="onClick" value="Connect">
               </form>
             </div>
             <div style="height: 300px; overflow: auto;">
@@ -109,5 +111,8 @@ p {
 }
 p.subtitle {
   padding-top: 1rem;
+}
+.box input {
+  width: 100%;
 }
 </style>
