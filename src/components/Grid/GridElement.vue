@@ -1,8 +1,11 @@
 <template>
-  <div :style="styleObj" class="grid-element">
-    <div class="token"></div>
+  <div :style="styleObj"
+       class="grid-element">
+    <div class="token">{{ text }}{{ item.id }}</div>
 
-    <span class="collision-marker" v-if="collisions > 1">{{ collisions }}</span>
+    <span class="collision-marker" v-if="item.collisions > 1">
+      {{ item.collisions }}
+    </span>
   </div>
 </template>
 
@@ -10,24 +13,17 @@
 export default {
   inject: ['GRID_W', 'GRID_H'],
   props: {
-    collisions: Number,
-    x: Number,
-    y: Number,
-    w: {
-      type: Number,
-      default: this.GRID_W
-    },
-    h: {
-      type: Number,
-      default: this.GRID_H
-    },
+    item: Object,
     offsetX: Number,
     offsetY: Number
   },
+  data () {
+    return { text: '' }
+  },
   computed: {
     styleObj () {
-      var x = (this.x + this.offsetX) * this.GRID_W
-      var y = (this.y + this.offsetY) * this.GRID_H
+      var x = (this.item.x + this.offsetX) * this.GRID_W
+      var y = (this.item.y + this.offsetY) * this.GRID_H
       if (x < 0) {
         x = 0
       }
@@ -49,15 +45,20 @@ export default {
 .grid-element {
   position: absolute;
   cursor: move;
+  z-index: 2;
 }
 .token {
   margin: 10px;
   width: calc(100% - 20px);
   height: calc(100% - 20px);
+  font-size: 14px;
+  line-height: 28px;
   position: relative;
   background-color: black;
-  border-radius: 50px;
   display: inline-block;
+  text-align: center;
+  color: white;
+  font-family: Consolar, Courier New, Courier, monospace;
 }
 .collision-marker {
   position: absolute;

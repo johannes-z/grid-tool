@@ -1,42 +1,34 @@
 <template>
-<div>
-  <nav class="navbar" role="navigation" aria-label="dropdown navigation">
-    <div class="navbar-item has-dropdown is-hoverable">
-  <div class="control">
-    <button class="button is-text" @click.prevent.stop="move(-1, 0)">move left</button>
-    <button class="button is-text" @click.prevent.stop="move(1, 0)">move right</button>
-    <button class="button is-text" @click.prevent.stop="move(0, -1)">move up</button>
-    <button class="button is-text" @click.prevent.stop="move(0, 1)">move down</button>
-  </div>
-    </div>
-  </nav>
-  <Grid :offsetX="offsetX" :offsetY="offsetY"></Grid>
-</div>
+  <router-view></router-view>
 </template>
 
 <script>
-import Grid from './Grid/Grid.vue'
+import Client from './js/client'
+const client = new Client()
 
 export default {
-  components: { Grid },
-  data () {
-    return {
-      offsetX: 0,
-      offsetY: 0
-    }
+  inject: ['bus'],
+  provide: {
+    client
+  },
+  created () {
+    this.bus.$on('itemMoved', this.onItemMoved)
+    this.bus.$on('itemCreated', this.onItemCreated)
+    this.bus.$on('offsetChanged', this.onOffsetChanged)
   },
   methods: {
-    move (x, y) {
-      this.offsetX += x
-      this.offsetY += y
+    onItemMoved (payload) {
+      let data = { action: 'moved', payload }
+      client.send(JSON.stringify(data))
+    },
+    onItemCreated (payload) {
+      let data = { action: 'created', payload }
+      client.send(JSON.stringify(data))
+    },
+    onOffsetChanged (payload) {
+      let data = { action: 'offset', payload }
+      client.send(JSON.stringify(data))
     }
   }
 }
 </script>
-
-<style>
-body {
-  height: 100%;
-  margin: 5px;
-}
-</style>

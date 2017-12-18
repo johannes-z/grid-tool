@@ -1,41 +1,48 @@
 <template>
   <div id="grid" ref="grid" :style="styleObj"
         @mouseup.prevent="onMouseUp($event)"
-        @mousemove.prevent="onMouseMove($event)">
+        @mousemove.prevent="onMouseMove($event)"
+        @contextmenu.prevent="onContextMenu($event)">
     <GridElement v-for="(item, index) in items" :key="index"
-                  :x="item.x" :y="item.y"
-                  :offsetX="offsetX" :offsetY="offsetY"
-                  :collisions="item.collisions"
-                  @mousedown.native.prevent="onMouseDown($event, item)"
+                 :item="item"
+                 :offsetX="offsetX" :offsetY="offsetY"
+                 @mousedown.left.native.prevent="onMouseDown($event, item)"
     ></GridElement>
-    <div class="grid-element-preview" :style="previewStyleObj" v-show="dragging"></div>
+    <CollisionIndicator v-for="(collisions, key) in collisionMap" :key="key"
+                        :coordinates="key"
+                        :collisions="collisions"
+                        :offsetX="offsetX"
+                        :offsetY="offsetY"
+    ></CollisionIndicator>
+    <div class="grid-element-preview"
+         :style="previewStyleObj"
+         v-show="dragging"></div>
+    {{ collisions }}
   </div>
 </template>
 
 <script>
-import { throttle } from '../js/util'
+import { throttle } from '../../js/util'
 import GridElement from './GridElement.vue'
+import CollisionIndicator from './CollisionIndicator.vue'
 
 const GRID_W = 50
 const GRID_H = GRID_W
 
 export default {
+  inject: ['bus', 'client'],
   provide: {
     GRID_W,
     GRID_H
   },
-  components: { GridElement },
+  components: { GridElement, CollisionIndicator },
   props: {
     offsetX: Number,
     offsetY: Number
   },
   data () {
     return {
-      elements: [
-        { x: 2, y: 5 },
-        { x: 2, y: 2 },
-        { x: 0, y: 2 }
-      ],
+      elements: [],
       collisionMap: {},
       grid: {},
       selectedItem: {},
@@ -44,12 +51,18 @@ export default {
       newY: 0
     }
   },
+  created () {
+    if (this.client.socket.readyState !== 1) return
+    this.client.registerEventListener('message', event => {
+      this.elements = JSON.parse(event.data)
+    })
+  },
   mounted () {
     var grid = document.querySelector('#grid')
     this.grid = grid
   },
   computed: {
-    items () {
+    collisions () {
       this.collisionMap = {}
       var collisionMap = this.collisionMap
       this.elements.forEach(e => {
@@ -59,8 +72,9 @@ export default {
         y = y < 0 ? 0 : y
         var key = x + ';' + y
         collisionMap[key] = (collisionMap[key] || 0) + 1
-        e.collisions = collisionMap[key]
       })
+    },
+    items () {
       return this.elements
     },
     styleObj () {
@@ -79,6 +93,11 @@ export default {
     }
   },
   methods: {
+    moveItem (item, x, y) {
+      item.x = x - this.offsetX
+      item.y = y - this.offsetY
+      this.bus.$emit('itemMoved', item)
+    },
     getCoordinates (event) {
       let cx = event.clientX - this.grid.offsetLeft
       let cy = event.clientY - this.grid.offsetTop
@@ -88,20 +107,33 @@ export default {
 
       return {x, y}
     },
+    onContextMenu (event) {
+      let target = event.target
+      if (!target || target.id !== 'grid') return
+      let { x, y } = this.getCoordinates(event)
+      let items = this.items
+      var id = items.length > 0 ? Math.max(...items.map(i => i.id)) : 0
+      let item = {
+        id: id + 1,
+        x: x - this.offsetX,
+        y: y - this.offsetY
+      }
+      this.elements.push(item)
+      this.bus.$emit('itemCreated', item)
+    },
     onMouseDown (event, item) {
       if (this.dragging) return
       this.dragging = true
+      let { x, y } = this.getCoordinates(event)
       this.selectedItem = item
-      this.newX = item.x + this.offsetX
-      this.newY = item.y + this.offsetY
+      this.newX = x
+      this.newY = y
     },
     onMouseUp (event) {
       if (!this.dragging) return
       this.dragging = false
       let { x, y } = this.getCoordinates(event)
-      var item = this.selectedItem
-      item.x = x - this.offsetX
-      item.y = y - this.offsetY
+      this.moveItem(this.selectedItem, x, y)
     },
     onMouseMove: throttle(function (event) {
       if (!this.dragging) return
@@ -117,9 +149,9 @@ export default {
 <style>
 #grid {
   position: relative;
-  width: 2000px;
-  height: 2000px;
-  display: inline-block;
+  width: 2001px;
+  height: 2001px;
+  display: block;
 
   background-image:
     linear-gradient(to right, rgba(0, 0, 0, 0.15) 1px, transparent 1px),
@@ -131,5 +163,6 @@ export default {
   width: 50px;
   height: 50px;
   background-color: rgba(255, 0, 0, 0.3);
+  z-index: 1;
 }
 </style>
