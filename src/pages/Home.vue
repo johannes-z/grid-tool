@@ -12,7 +12,7 @@
               <form>
                 <div class="field">
                   <div class="control">
-                    <input class="input is-large" type="text" 
+                    <input class="input is-large" type="text"
                       placeholder="i.e.: 10.0.0.1:8082" autofocus=""
                       v-model="address"
                       required pattern="^(([0-9]{1,3}\.){3}[0-9]{1,3}|localhost):[0-9]{1,4}$"

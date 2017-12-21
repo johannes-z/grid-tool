@@ -15,19 +15,24 @@ export default {
     this.bus.$on('itemMoved', this.onItemMoved)
     this.bus.$on('itemCreated', this.onItemCreated)
     this.bus.$on('offsetChanged', this.onOffsetChanged)
+    this.bus.$on('itemLabelChanged', this.itemLabelChanged)
   },
   methods: {
-    onItemMoved (payload) {
-      let data = { action: 'moved', payload }
+    send (action, payload) {
+      let data = { action, payload }
       client.send(JSON.stringify(data))
+    },
+    onItemMoved (payload) {
+      this.send('moved', payload)
     },
     onItemCreated (payload) {
-      let data = { action: 'created', payload }
-      client.send(JSON.stringify(data))
+      this.send('created', payload)
     },
     onOffsetChanged (payload) {
-      let data = { action: 'offset', payload }
-      client.send(JSON.stringify(data))
+      this.send('offset', payload)
+    },
+    itemLabelChanged (payload) {
+      this.send('label', payload)
     }
   }
 }

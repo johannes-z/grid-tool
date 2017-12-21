@@ -1,5 +1,5 @@
 <template>
-  <span class="collision-marker" 
+  <span class="collision-marker"
         :style="position"
         v-if="collisions > 1 ">
     {{ collisions }}
@@ -17,12 +17,12 @@ export default {
   },
   data () {
     return {
-      x: -1,
-      y: -1
+      x: 0,
+      y: 0
     }
   },
   created () {
-    let [x, y] = this.coordinates.split(';').map(c => Number(c))
+    let [x, y] = this.coordinates.split(';').map(Number)
     this.x = x
     this.y = y
   },
