@@ -6,11 +6,15 @@ export default class Client {
   }
 
   init (ip, port) {
+<<<<<<< HEAD:src/client/index.js
     let protocol = window.location.protocol
     protocol = protocol.substring(0, protocol.length - 1)
     let wsProtocol = protocol === 'http' ? 'ws' : 'wss'
 
     this.socket = new WebSocket(`${wsProtocol}://${ip}:${port}`)
+=======
+    this.socket = new WebSocket(`ws://${ip}:${port}`)
+>>>>>>> 8e50491eb5f2bcd8ecf2572dd4c0a5b16b58ff87:src/js/client.js
 
     var promise = new Promise((resolve, reject) => {
       // Connection opened

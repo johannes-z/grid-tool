@@ -2,7 +2,8 @@
   <div id="grid" ref="grid" :style="styleObj"
         @mouseup.prevent="onMouseUp($event)"
         @mousemove.prevent="onMouseMove($event)"
-        @contextmenu.prevent="onContextMenu($event)">
+        @contextmenu.prevent="onContextMenu($event)"
+        @click.prevent.stop="contextMenuOpen = false">
     <GridElement v-for="(item, index) in items" :key="index"
                  :item="item"
                  :offsetX="offsetX" :offsetY="offsetY"
@@ -17,7 +18,15 @@
     <div class="grid-element-preview"
          :style="previewStyleObj"
          v-show="dragging"></div>
-    {{ collisions }}
+
+    {{collisions}}
+
+    <ContextMenu
+      :x="contextMenuX"
+      :y="contextMenuY"
+      :item="contextMenuItem"
+      v-if="contextMenuOpen"
+    ></ContextMenu>
   </div>
 </template>
 
@@ -26,7 +35,9 @@ import { throttle } from '../../js/util'
 import GridElement from './GridElement.vue'
 import CollisionIndicator from './CollisionIndicator.vue'
 
-const GRID_W = 50
+import ContextMenu from './ContextMenu.vue'
+
+const GRID_W = 100
 const GRID_H = GRID_W
 
 export default {
@@ -35,7 +46,7 @@ export default {
     GRID_W,
     GRID_H
   },
-  components: { GridElement, CollisionIndicator },
+  components: { GridElement, CollisionIndicator, ContextMenu },
   props: {
     offsetX: Number,
     offsetY: Number
@@ -48,13 +59,24 @@ export default {
       selectedItem: {},
       dragging: false,
       newX: 0,
-      newY: 0
+      newY: 0,
+      contextMenuOpen: false,
+      contextMenuX: 0,
+      contextMenuY: 0,
+      contextMenuItem: {}
     }
   },
   created () {
     if (this.client.socket.readyState !== 1) return
     this.client.registerEventListener('message', event => {
       this.elements = JSON.parse(event.data)
+    })
+
+    this.bus.$on('openContextMenu', position => {
+      this.contextMenuOpen = true
+      this.contextMenuX = position.x
+      this.contextMenuY = position.y
+      this.contextMenuItem = position.item
     })
   },
   mounted () {
@@ -94,8 +116,11 @@ export default {
   },
   methods: {
     moveItem (item, x, y) {
+      let itemX = item.x
+      let itemY = item.y
       item.x = x - this.offsetX
       item.y = y - this.offsetY
+      if (itemX === item.x && itemY === item.y) return
       this.bus.$emit('itemMoved', item)
     },
     getCoordinates (event) {
@@ -160,9 +185,9 @@ export default {
 
 .grid-element-preview {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: rgba(255, 0, 0, 0.3);
+  width: 100px;
+  height: 100px;
+  background-color: rgba(0, 0, 100, 0.3);
   z-index: 1;
 }
 </style>

@@ -18,6 +18,7 @@ wss.on('connection', function connection (ws, req) {
         tokens.push(payload)
         break
       case 'moved':
+      case 'label':
         let index = tokens.findIndex(t => t.id === payload.id)
         tokens[index] = payload
         break
