@@ -6,9 +6,11 @@ export default class Client {
   }
 
   init (ip, port) {
-    this.socket = new WebSocket(`wss://${ip}:${port}`, {
-      rejectUnauthorized: false
-    })
+    let protocol = window.location.protocol
+    protocol = protocol.substring(0, protocol.length - 1)
+    let wsProtocol = protocol === 'http' ? 'ws' : 'wss'
+
+    this.socket = new WebSocket(`${wsProtocol}://${ip}:${port}`)
 
     var promise = new Promise((resolve, reject) => {
       // Connection opened
@@ -19,10 +21,6 @@ export default class Client {
       // Connection errored
       this.socket.addEventListener('error', event => {
         reject(event)
-      })
-
-      // Listen for messages
-      this.socket.addEventListener('message', event => {
       })
 
       // Connection errored

@@ -6,11 +6,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "server": "node ./src/js/server.js",
+    "server": "node ./src/server/index.js",
+    "init": "node ./initDB.js",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
+    "sequelize": "^4.28.6",
+    "sqlite3": "^3.1.13",
     "websocketserver": "^1.0.0"
   },
   "browserslist": [

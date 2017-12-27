@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Client from './js/client'
+import Client from './client'
 const client = new Client()
 
 export default {

@@ -42,6 +42,10 @@ export default {
     if (this.client.socket.readyState !== 1) {
       this.$router.push({ name: 'home' })
     }
+
+    this.client.socket.addEventListener('close', event => {
+      this.$router.push({ name: 'home' })
+    })
   },
   methods: {
     move (x, y) {

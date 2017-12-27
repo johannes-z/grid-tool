@@ -1,6 +1,6 @@
 const WebSocket = require('ws')
 
-const wss = new WebSocket.Server({ port: 8082 })
+const wss = new WebSocket.Server({ port: 8082, rejectUnauthorized: false })
 
 let connections = []
 let tokens = []
@@ -34,9 +34,7 @@ wss.on('connection', function connection (ws, req) {
   ws.on('error', err => {
     if (err.code === 'ECONNRESET') console.log('client connection reset')
   })
-  ws.on('close', () => {
-    connections.splice(connections.indexOf(ip), 1)
-  })
+  ws.on('close', () => connections.splice(connections.indexOf(ip), 1))
 
   ws.send(JSON.stringify(tokens))
 })
